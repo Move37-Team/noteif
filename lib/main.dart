@@ -1,8 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() => runApp(new MaterialApp(home: new MyApp()));
+void main() => runApp(MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale("fa", "IR"),
+      ],
+      locale: Locale("fa", "IR"),
+      home: new MyApp(),
+    ));
 
 class MyApp extends StatefulWidget {
   @override
@@ -11,6 +23,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  final myController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    // This also removes the _printLatestValue listener.
+    myController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -37,17 +58,56 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-        title: new Text('Flutter Local Notification'),
-      ),
-      body: new Center(
-        child: new RaisedButton(
-          onPressed: showNotification,
-          child: new Text(
-            'Demo',
-            style: Theme.of(context).textTheme.headline,
-          ),
+      appBar: AppBar(
+        title: Center(
+            child: Text('Noteif')
         ),
+      ),
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+            child: TextField(
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              decoration: new InputDecoration(
+                labelText: "متن یادداشت",
+//                labelStyle: TextStyle(
+//                  color: Colors.red
+//                ),
+                border: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(25.0),
+                  borderSide: new BorderSide(),
+                ),
+              ),
+              controller: myController,
+            ),
+          ),
+          RaisedButton(
+            onPressed: () {
+              print(myController.text);
+            },
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'ثبت',
+                    style: Theme.of(context).textTheme.headline,
+                  ),
+                  flex: 1,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'حذف نوتیفیکیشن',
+                    style: Theme.of(context).textTheme.headline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -55,9 +115,7 @@ class _MyAppState extends State<MyApp> {
   showNotification() async {
     var android = new AndroidNotificationDetails(
         'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-        priority: Priority.High,importance: Importance.Max,
-        ongoing: true
-    );
+        priority: Priority.High, importance: Importance.Max, ongoing: true);
     var iOS = new IOSNotificationDetails();
     var platform = new NotificationDetails(android, iOS);
     await flutterLocalNotificationsPlugin.show(
