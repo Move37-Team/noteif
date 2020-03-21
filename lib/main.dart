@@ -1,20 +1,94 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:noteif/helper/colors.dart';
 
-void main() => runApp(MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+
+Widget emptyAppbar() {
+  return GradientAppBar(
+    flexibleSpace: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        CustomPaint(
+          painter: CircleOne(),
+        ),
+        CustomPaint(
+          painter: CircleTwo(),
+        ),
       ],
-      supportedLocales: [
-        Locale("fa", "IR"),
-      ],
-      locale: Locale("fa", "IR"),
-      home: new MyApp(),
-    ));
+    ),
+    title: Center(
+      child: Text('Noteif')
+    ),
+    elevation: 0,
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [AppColors.HeaderBlueDark, AppColors.HeaderBlueLight],
+    ),
+  );
+}
+
+
+class CircleOne extends CustomPainter {
+  Paint _paint;
+
+  CircleOne() {
+    _paint = Paint()
+      ..color = AppColors.HeaderCircle
+      ..strokeWidth = 10.0
+      ..style = PaintingStyle.fill;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawCircle(Offset(28.0, 0.0), 99.0, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class CircleTwo extends CustomPainter {
+  Paint _paint;
+
+  CircleTwo() {
+    _paint = Paint()
+      ..color = AppColors.HeaderCircle
+      ..strokeWidth = 10.0
+      ..style = PaintingStyle.fill;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawCircle(Offset(-30, 20), 50.0, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+
+void main() {
+  runApp(MaterialApp(
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: [
+      Locale("fa", "IR"),
+    ],
+    locale: Locale("fa", "IR"),
+    home: new MyApp(),
+  ));
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -58,56 +132,71 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-            child: Text('Noteif')
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-            child: TextField(
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              decoration: new InputDecoration(
-                labelText: "متن یادداشت",
+      appBar: emptyAppbar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+              child: TextField(
+                minLines: 3,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: new InputDecoration(
+                  labelText: "متن یادداشت",
 //                labelStyle: TextStyle(
 //                  color: Colors.red
 //                ),
-                border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(25.0),
-                  borderSide: new BorderSide(),
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(),
+                  ),
                 ),
+                controller: myController,
               ),
-              controller: myController,
             ),
-          ),
-          RaisedButton(
-            onPressed: () {
-              print(myController.text);
-            },
-            child: Row(
+            Row(
               children: <Widget>[
                 Expanded(
-                  child: Text(
-                    'ثبت',
-                    style: Theme.of(context).textTheme.headline,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      color: AppColors.ElfGreen,
+                      onPressed: () {
+                        print(myController.text);
+                      },
+                      child: Text(
+                        'ثبت',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                        ),
+                      ),
+                    ),
                   ),
                   flex: 1,
                 ),
                 Expanded(
                   flex: 1,
-                  child: Text(
-                    'حذف نوتیفیکیشن',
-                    style: Theme.of(context).textTheme.headline,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        print(myController.text);
+                      },
+                      child: Text(
+                        'حذف نوتیفیکیشن',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
