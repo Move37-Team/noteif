@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
 
-
 Widget emptyAppbar() {
   return GradientAppBar(
     flexibleSpace: Row(
@@ -19,9 +18,7 @@ Widget emptyAppbar() {
         ),
       ],
     ),
-    title: Center(
-      child: Text('Noteif')
-    ),
+    title: Center(child: Text('Noteif')),
     elevation: 0,
     gradient: LinearGradient(
       begin: Alignment.topLeft,
@@ -30,7 +27,6 @@ Widget emptyAppbar() {
     ),
   );
 }
-
 
 class CircleOne extends CustomPainter {
   Paint _paint;
@@ -73,7 +69,6 @@ class CircleTwo extends CustomPainter {
     return false;
   }
 }
-
 
 void main() {
   runApp(MaterialApp(
@@ -158,41 +153,26 @@ class _MyAppState extends State<MyApp> {
             ),
             Row(
               children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      color: AppColors.ElfGreen,
-                      onPressed: () {
-                        print(myController.text);
-                      },
-                      child: Text(
-                        'ثبت',
-                        style: TextStyle(
-                          fontSize: 17.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  flex: 1,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      onPressed: () {
-                        print(myController.text);
-                      },
-                      child: Text(
-                        'حذف نوتیفیکیشن',
-                        style: TextStyle(
-                          fontSize: 17.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+
+                materialButton(
+                    'ثبت',
+                        () {},
+                    LinearGradient(
+                      colors: <Color>[
+                        AppColors.BlueLight,
+                        AppColors.BlueDark,
+                      ],
+                    )),
+
+                materialButton(
+                    'حذف نوتیفیکیشن',
+                        () {},
+                    LinearGradient(
+                      colors: <Color>[
+                        AppColors.BlueLight,
+                        AppColors.BlueDark,
+                      ],
+                    )),
               ],
             ),
           ],
@@ -210,5 +190,45 @@ class _MyAppState extends State<MyApp> {
     await flutterLocalNotificationsPlugin.show(
         0, 'New Video is out', 'Flutter Local Notification', platform,
         payload: 'Nitish Kumar Singh is part time Youtuber');
+  }
+
+  materialButton(String buttonText, void Function() param1, LinearGradient linearGradient) {
+    return
+      Expanded(
+        flex: 1,
+        child: Container(
+          height: 45,
+          margin: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            gradient: linearGradient,
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.BlueShadow,
+                blurRadius: 2.0,
+                spreadRadius: 1.0,
+                offset: Offset(0.0, 0.0),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: param1,
+              child: Center(
+                child: Text(
+                  buttonText,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
   }
 }
