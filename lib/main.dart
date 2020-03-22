@@ -136,6 +136,8 @@ class _MyAppState extends State<MyApp> {
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
               child: TextField(
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.right,
                 minLines: 3,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
