@@ -4,7 +4,7 @@ class AppColors {
   static const Color Genoa = Color(0xFF2D6B6D); // DarkBlue
   static const Color Viking = Color(0xFF4BC2C5); // Blue
   static const Color WildWatermelon = Color(0xFFFC5185); // Pink
-  static const Color ElfGreen = Color(0xFF178978); // LightGreen
+  static const Color ElfGreen = Color(0xFF178978); // Ligh
 
   static const Color BlueLight = Color.fromRGBO(126, 182, 255, 1);
   static const Color BlueDark = Color.fromRGBO(95, 135, 231, 1);

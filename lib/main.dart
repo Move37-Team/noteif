@@ -115,13 +115,14 @@ class _MyAppState extends State<MyApp> {
 
   Future onSelectNotification(String payload) {
     debugPrint("payload : $payload");
-    showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text('Notification'),
-        content: new Text('$payload'),
-      ),
-    );
+    myController.text = payload;
+//    showDialog(
+//      context: context,
+//      builder: (_) => new AlertDialog(
+//        title: new Text('Notification'),
+//        content: new Text('$payload'),
+//      ),
+//    );
   }
 
   @override
@@ -144,36 +145,39 @@ class _MyAppState extends State<MyApp> {
 //                  color: Colors.red
 //                ),
                   border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(25.0),
+                    borderRadius: new BorderRadius.circular(5.0),
                     borderSide: new BorderSide(),
                   ),
                 ),
                 controller: myController,
               ),
             ),
-            Row(
-              children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: <Widget>[
 
-                materialButton(
-                    'ثبت',
-                        () {},
-                    LinearGradient(
-                      colors: <Color>[
-                        AppColors.BlueLight,
-                        AppColors.BlueDark,
-                      ],
-                    )),
+                  materialButton(
+                      'ثبت',
+                      showNotification,
+                      LinearGradient(
+                        colors: <Color>[
+                          AppColors.Viking,
+                          AppColors.ElfGreen,
+                        ],
+                      )),
 
-                materialButton(
-                    'حذف نوتیفیکیشن',
-                        () {},
-                    LinearGradient(
-                      colors: <Color>[
-                        AppColors.BlueLight,
-                        AppColors.BlueDark,
-                      ],
-                    )),
-              ],
+                  materialButton(
+                      'حذف نوتیفیکیشن',
+                          () {flutterLocalNotificationsPlugin.cancel(0);},
+                      LinearGradient(
+                        colors: <Color>[
+                          AppColors.BlueDark,
+                          AppColors.HeaderBlueDark,
+                        ],
+                      )),
+                ],
+              ),
             ),
           ],
         ),
@@ -184,12 +188,15 @@ class _MyAppState extends State<MyApp> {
   showNotification() async {
     var android = new AndroidNotificationDetails(
         'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+        playSound: false,
+        style: AndroidNotificationStyle.BigText,
+        autoCancel: false,
         priority: Priority.High, importance: Importance.Max, ongoing: true);
-    var iOS = new IOSNotificationDetails();
+    var iOS = new IOSNotificationDetails(presentSound: false);
     var platform = new NotificationDetails(android, iOS);
     await flutterLocalNotificationsPlugin.show(
-        0, 'New Video is out', 'Flutter Local Notification', platform,
-        payload: 'Nitish Kumar Singh is part time Youtuber');
+        0, null, myController.text, platform,
+        payload: myController.text);
   }
 
   materialButton(String buttonText, void Function() param1, LinearGradient linearGradient) {
@@ -198,7 +205,7 @@ class _MyAppState extends State<MyApp> {
         flex: 1,
         child: Container(
           height: 45,
-          margin: const EdgeInsets.all(10.0),
+          margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 10.0),
           decoration: BoxDecoration(
             gradient: linearGradient,
             borderRadius: BorderRadius.all(
@@ -207,9 +214,9 @@ class _MyAppState extends State<MyApp> {
             boxShadow: [
               BoxShadow(
                 color: AppColors.BlueShadow,
-                blurRadius: 2.0,
+                blurRadius: 3.0,
                 spreadRadius: 1.0,
-                offset: Offset(0.0, 0.0),
+                offset: Offset(2.0, 2.0),
               ),
             ],
           ),
@@ -221,7 +228,7 @@ class _MyAppState extends State<MyApp> {
                 child: Text(
                   buttonText,
                   style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16.0,
                       color: Colors.white,
                       fontWeight: FontWeight.w500),
                 ),
