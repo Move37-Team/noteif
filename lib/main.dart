@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -211,7 +210,9 @@ class _MyAppState extends State<MyApp> {
   showNotification(String notificationText) async {
     var android = new AndroidNotificationDetails('note', 'note', 'Your note',
         playSound: false,
-        style: AndroidNotificationStyle.BigText,
+        styleInformation: BigTextStyleInformation(
+            notificationText
+        ),
         autoCancel: false,
         priority: Priority.High,
         importance: Importance.Max,
