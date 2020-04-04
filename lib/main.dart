@@ -4,6 +4,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Widget emptyAppbar() {
   return GradientAppBar(
@@ -18,7 +19,11 @@ Widget emptyAppbar() {
         ),
       ],
     ),
-    title: Center(child: Text('Noteif')),
+    title: Center(
+      child: Text(
+        'Noteif',
+      ),
+    ),
     elevation: 0,
     gradient: LinearGradient(
       begin: Alignment.topLeft,
@@ -93,6 +98,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final myController = TextEditingController();
+  SharedPreferences prefs;
 
   @override
   void dispose() {
@@ -105,25 +111,34 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    SharedPreferences.getInstance().then((value) => setState(() {
+          prefs = value;
+          String note = prefs.getString('note');
+          if (note != null) {
+            myController.text = note;
+            showNotification(note);
+          }
+        }));
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings,
-        onSelectNotification: onSelectNotification);
+//        onSelectNotification: onSelectNotification
+    );
   }
-
-  Future onSelectNotification(String payload) {
-    debugPrint("payload : $payload");
-    myController.text = payload;
-//    showDialog(
-//      context: context,
-//      builder: (_) => new AlertDialog(
-//        title: new Text('Notification'),
-//        content: new Text('$payload'),
-//      ),
-//    );
-  }
+//
+//  Future onSelectNotification(String payload) {
+//    debugPrint("payload : $payload");
+//    myController.text = payload;
+////    showDialog(
+////      context: context,
+////      builder: (_) => new AlertDialog(
+////        title: new Text('Notification'),
+////        content: new Text('$payload'),
+////      ),
+////    );
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +156,9 @@ class _MyAppState extends State<MyApp> {
                 minLines: 3,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
+                onChanged: (val){
+                  print(val);
+                },
                 decoration: new InputDecoration(
                   labelText: "متن یادداشت",
 //                labelStyle: TextStyle(
@@ -158,20 +176,18 @@ class _MyAppState extends State<MyApp> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: <Widget>[
-
                   materialButton(
                       'ثبت',
-                      showNotification,
+                      setNote,
                       LinearGradient(
                         colors: <Color>[
                           AppColors.Viking,
                           AppColors.ElfGreen,
                         ],
                       )),
-
-                  materialButton(
-                      'حذف نوتیفیکیشن',
-                          () {flutterLocalNotificationsPlugin.cancel(0);},
+                  materialButton('حذف نوتیفیکیشن', () {
+                    flutterLocalNotificationsPlugin.cancel(0);
+                  },
                       LinearGradient(
                         colors: <Color>[
                           AppColors.BlueDark,
@@ -187,57 +203,62 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  showNotification() async {
-    var android = new AndroidNotificationDetails(
-        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+  setNote() {
+    prefs.setString('note', myController.text);
+    showNotification(myController.text);
+  }
+
+  showNotification(String notificationText) async {
+    var android = new AndroidNotificationDetails('note', 'note', 'Your note',
         playSound: false,
         style: AndroidNotificationStyle.BigText,
         autoCancel: false,
-        priority: Priority.High, importance: Importance.Max, ongoing: true);
+        priority: Priority.High,
+        importance: Importance.Max,
+        ongoing: true);
     var iOS = new IOSNotificationDetails(presentSound: false);
     var platform = new NotificationDetails(android, iOS);
-    await flutterLocalNotificationsPlugin.show(
-        0, null, myController.text, platform,
-        payload: myController.text);
+    await flutterLocalNotificationsPlugin
+        .show(0, null, notificationText, platform, payload: notificationText);
   }
 
-  materialButton(String buttonText, void Function() param1, LinearGradient linearGradient) {
-    return
-      Expanded(
-        flex: 1,
-        child: Container(
-          height: 45,
-          margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 10.0),
-          decoration: BoxDecoration(
-            gradient: linearGradient,
-            borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.BlueShadow,
-                blurRadius: 3.0,
-                spreadRadius: 1.0,
-                offset: Offset(2.0, 2.0),
-              ),
-            ],
+  materialButton(String buttonText, void Function() param1,
+      LinearGradient linearGradient) {
+    return Expanded(
+      flex: 1,
+      child: Container(
+        height: 45,
+        margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 10.0),
+        decoration: BoxDecoration(
+          gradient: linearGradient,
+          borderRadius: BorderRadius.all(
+            Radius.circular(8.0),
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: param1,
-              child: Center(
-                child: Text(
-                  buttonText,
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500),
-                ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.BlueShadow,
+              blurRadius: 3.0,
+              spreadRadius: 1.0,
+              offset: Offset(2.0, 2.0),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: param1,
+            child: Center(
+              child: Text(
+                buttonText,
+                style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 }
