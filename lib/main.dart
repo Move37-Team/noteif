@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,71 +11,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Widget emptyAppbar() {
   return GradientAppBar(
-    flexibleSpace: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        CustomPaint(
-          painter: CircleOne(),
-        ),
-        CustomPaint(
-          painter: CircleTwo(),
-        ),
-      ],
-    ),
-    title: Center(
-      child: Text(
-        'Noteif',
-      ),
-    ),
     elevation: 0,
     gradient: LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [AppColors.HeaderBlueDark, AppColors.HeaderBlueLight],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [AppColors.CCECECE, AppColors.CEEEEEE],
     ),
   );
-}
-
-class CircleOne extends CustomPainter {
-  Paint _paint;
-
-  CircleOne() {
-    _paint = Paint()
-      ..color = AppColors.HeaderCircle
-      ..strokeWidth = 10.0
-      ..style = PaintingStyle.fill;
-  }
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawCircle(Offset(28.0, 0.0), 99.0, _paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-class CircleTwo extends CustomPainter {
-  Paint _paint;
-
-  CircleTwo() {
-    _paint = Paint()
-      ..color = AppColors.HeaderCircle
-      ..strokeWidth = 10.0
-      ..style = PaintingStyle.fill;
-  }
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawCircle(Offset(-30, 20), 50.0, _paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
 }
 
 void main() {
@@ -84,6 +30,10 @@ void main() {
     supportedLocales: [
       Locale("fa", "IR"),
     ],
+    theme: ThemeData(
+        fontFamily: 'IRANSansMobile',
+//        primaryColor: AppColors.C4BC2C5
+    ),
     locale: Locale("fa", "IR"),
     home: new MyApp(),
   ));
@@ -97,6 +47,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final myController = TextEditingController();
+  bool showNotification = false;
   SharedPreferences prefs;
 
   @override
@@ -111,25 +62,30 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((value) => setState(() {
-          prefs = value;
-          String note = prefs.getString('note');
-          if (note != null) {
-            myController.text = note;
-            showNotification(note);
-          }
-        }));
+      prefs = value;
+      String note = prefs.getString('note');
+      showNotification = prefs.getBool('showNotification') != null ? prefs.getBool('showNotification') : true; // for handling if pref is null
+      if (note != null) {
+        myController.text = note;
+        if(showNotification){
+          sendNotification(note);
+        }
+      }
+    }));
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
-    flutterLocalNotificationsPlugin.initialize(initSetttings,
+    flutterLocalNotificationsPlugin.initialize(
+      initSetttings,
 //        onSelectNotification: onSelectNotification
     );
   }
-//
+
+
 //  Future onSelectNotification(String payload) {
-//    debugPrint("payload : $payload");
-//    myController.text = payload;
+////    debugPrint("payload : $payload");
+////    myController.text = payload;
 ////    showDialog(
 ////      context: context,
 ////      builder: (_) => new AlertDialog(
@@ -142,124 +98,175 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: emptyAppbar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-              child: TextField(
-                textDirection: TextDirection.rtl,
-                textAlign: TextAlign.right,
-                minLines: 3,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                onChanged: (val){
-                  print(val);
-                },
-                decoration: new InputDecoration(
-                  labelText: "متن یادداشت",
-//                labelStyle: TextStyle(
-//                  color: Colors.red
-//                ),
-                  border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(5.0),
-                    borderSide: new BorderSide(),
+      backgroundColor: AppColors.CEEEEEE,
+//      appBar: emptyAppbar(),
+      body: SafeArea(
+        child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [AppColors.CCECECE, AppColors.CEEEEEE],
+                      )),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'Noteif',
+                    style: TextStyle(
+                      fontFamily: 'Chewy',
+                      color: Colors.black,
+                      fontSize: 30.0,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                controller: myController,
-              ),
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                  child: Text(
+                    'ثبت یادداشت های مهم شما در نوتیفیکیشن :)',
+                    style: TextStyle(
+                      height: 1.7,
+                      fontSize: 14.0,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      20.0,30.0,20.0,20.0),
+                  child: TextField(
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    minLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: new InputDecoration(
+                      labelText: "متن یادداشت",
+                      border: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(7.0),
+                      ),
+                    ),
+                    controller: myController,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                  child: Center(
+                      child: materialButton(
+                          'ثبت یادداشت',
+                          setNote
+                      )
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  width: 300.0,
+                  child: MergeSemantics(
+                    child: ListTile(
+                      title: Text(
+                          'نمایش دادن نوتیفیکیشن',
+                        style: TextStyle(
+                          fontSize: 14.0
+                        ),
+                      ),
+                      trailing: CupertinoSwitch(
+                        activeColor: AppColors.C4BC2C5,
+                        value: showNotification,
+                        onChanged: (val) => onSwitchChange(val),
+                      ),
+                      onTap: () => onSwitchChange(!showNotification),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: <Widget>[
-                  materialButton(
-                      'ثبت',
-                      setNote,
-                      LinearGradient(
-                        colors: <Color>[
-                          AppColors.Viking,
-                          AppColors.ElfGreen,
-                        ],
-                      )),
-                  materialButton('حذف نوتیفیکیشن', () {
-                    flutterLocalNotificationsPlugin.cancel(0);
-                  },
-                      LinearGradient(
-                        colors: <Color>[
-                          AppColors.BlueDark,
-                          AppColors.HeaderBlueDark,
-                        ],
-                      )),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   setNote() {
-    prefs.setString('note', myController.text);
-    showNotification(myController.text);
+    setState(() {
+      showNotification = true;
+    });
+    prefs.setBool('showNotification', true);
+    prefs.setString('note', myController.text.trim());
+    sendNotification(myController.text.trim());
   }
 
-  showNotification(String notificationText) async {
-    var android = new AndroidNotificationDetails('note', 'note', 'Your note',
-        playSound: false,
-        styleInformation: BigTextStyleInformation(
-            notificationText
+  sendNotification(String notificationText) async {
+    if(notificationText.isNotEmpty){
+      var android = new AndroidNotificationDetails('note', 'note', 'Your note',
+          playSound: false,
+          enableVibration: false,
+          styleInformation: BigTextStyleInformation(notificationText),
+          autoCancel: false,
+          priority: Priority.Max,
+          importance: Importance.Max,
+          ongoing: true);
+      var iOS = new IOSNotificationDetails(presentSound: false);
+      var platform = new NotificationDetails(android, iOS);
+      await flutterLocalNotificationsPlugin
+          .show(0, null, notificationText, platform, payload: notificationText);
+    }
+  }
+
+  materialButton(String buttonText, void Function() param1) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 10.0),
+      decoration: BoxDecoration(
+        color: AppColors.C4BC2C5,
+        borderRadius: BorderRadius.all(
+          Radius.circular(50.0),
         ),
-        autoCancel: false,
-        priority: Priority.High,
-        importance: Importance.Max,
-        ongoing: true);
-    var iOS = new IOSNotificationDetails(presentSound: false);
-    var platform = new NotificationDetails(android, iOS);
-    await flutterLocalNotificationsPlugin
-        .show(0, null, notificationText, platform, payload: notificationText);
-  }
-
-  materialButton(String buttonText, void Function() param1,
-      LinearGradient linearGradient) {
-    return Expanded(
-      flex: 1,
-      child: Container(
-        height: 45,
-        margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 10.0),
-        decoration: BoxDecoration(
-          gradient: linearGradient,
-          borderRadius: BorderRadius.all(
-            Radius.circular(8.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 1.5,
+            spreadRadius: 0.1,
+            offset: Offset(1.0, 1.0),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.BlueShadow,
-              blurRadius: 3.0,
-              spreadRadius: 1.0,
-              offset: Offset(2.0, 2.0),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: param1,
-            child: Center(
-              child: Text(
-                buttonText,
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500),
-              ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.all(
+            Radius.circular(50.0),
+          ),
+          onTap: param1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+            child: Text(
+              buttonText,
+              style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
             ),
           ),
         ),
       ),
     );
+  }
+
+  onSwitchChange(bool val) {
+    if(val){
+      setNote();
+    } else {
+      setState(() {
+        showNotification = false;
+      });
+      prefs.setBool('show', false);
+      flutterLocalNotificationsPlugin.cancelAll();
+    }
   }
 }

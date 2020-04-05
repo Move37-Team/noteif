@@ -74,3 +74,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  fonts:
+    - family: Chewy
+      fonts:
+        - asset: assets/fonts/Chewy-Regular.ttf
+    - family: IRANSansMobile
+      fonts:
+        - asset: assets/fonts/IRANSansMobile.ttf
+        - asset: assets/fonts/IRANSansMobile_Bold.ttf
+          weight: 700
