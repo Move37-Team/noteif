@@ -21,7 +21,7 @@ void main() {
     ],
     theme: ThemeData(
       fontFamily: 'IRANSansMobile',
-//        primaryColor: AppColors.C4BC2C5
+        primaryColor: AppColors.bondiBlue
     ),
     locale: Locale("fa", "IR"),
     home: new MyApp(),
@@ -132,9 +132,13 @@ class _MyAppState extends State<MyApp> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
                   child: TextField(
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
-                    minLines: 5,
+                    minLines: 6,
+                    cursorColor: AppColors.bondiBlue,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: new InputDecoration(
