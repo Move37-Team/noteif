@@ -9,17 +9,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Widget emptyAppbar() {
-  return GradientAppBar(
-    elevation: 0,
-    gradient: LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: [AppColors.CCECECE, AppColors.CEEEEEE],
-    ),
-  );
-}
-
 void main() {
   runApp(MaterialApp(
     localizationsDelegates: [
@@ -31,7 +20,7 @@ void main() {
       Locale("fa", "IR"),
     ],
     theme: ThemeData(
-        fontFamily: 'IRANSansMobile',
+      fontFamily: 'IRANSansMobile',
 //        primaryColor: AppColors.C4BC2C5
     ),
     locale: Locale("fa", "IR"),
@@ -62,18 +51,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((value) => setState(() {
-      prefs = value;
-      String note = prefs.getString('note');
-      showNotification = prefs.getBool('showNotification') != null ? prefs.getBool('showNotification') : true; // for handling if pref is null
-      if (note != null) {
-        myController.text = note;
-        if(showNotification){
-          sendNotification(note);
-        }
-      }
-    }));
+          prefs = value;
+          String note = prefs.getString('note');
+          showNotification = prefs.getBool('showNotification') != null
+              ? prefs.getBool('showNotification')
+              : true; // for handling if pref is null
+          if (note != null) {
+            myController.text = note;
+            if (showNotification) {
+              sendNotification(note);
+            }
+          }
+        }));
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    var android = new AndroidInitializationSettings('@mipmap/notification_icon');
+    var android =
+        new AndroidInitializationSettings('@mipmap/notification_icon');
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(
@@ -81,7 +73,6 @@ class _MyAppState extends State<MyApp> {
 //        onSelectNotification: onSelectNotification
     );
   }
-
 
 //  Future onSelectNotification(String payload) {
 ////    debugPrint("payload : $payload");
@@ -98,7 +89,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.CEEEEEE,
+      backgroundColor: AppColors.whiteSmoke,
 //      appBar: emptyAppbar(),
       body: SafeArea(
         child: Container(
@@ -110,10 +101,10 @@ class _MyAppState extends State<MyApp> {
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [AppColors.CCECECE, AppColors.CEEEEEE],
-                      )),
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [AppColors.veryLightGray, AppColors.whiteSmoke],
+                  )),
                   width: double.infinity,
                   padding: const EdgeInsets.all(20.0),
                   child: Text(
@@ -127,8 +118,8 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 12.0),
                   child: Text(
                     'ثبت یادداشت های مهم شما در نوتیفیکیشن :)',
                     style: TextStyle(
@@ -139,8 +130,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      20.0,30.0,20.0,20.0),
+                  padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
                   child: TextField(
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
@@ -157,13 +147,9 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-                  child: Center(
-                      child: materialButton(
-                          'ثبت یادداشت',
-                          setNote
-                      )
-                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 10.0),
+                  child: Center(child: materialButton('ثبت یادداشت', setNote)),
                 ),
                 Container(
                   padding: const EdgeInsets.all(10.0),
@@ -171,13 +157,11 @@ class _MyAppState extends State<MyApp> {
                   child: MergeSemantics(
                     child: ListTile(
                       title: Text(
-                          'نمایش دادن نوتیفیکیشن',
-                        style: TextStyle(
-                          fontSize: 14.0
-                        ),
+                        'نمایش دادن نوتیفیکیشن',
+                        style: TextStyle(fontSize: 14.0),
                       ),
                       trailing: CupertinoSwitch(
-                        activeColor: AppColors.C4BC2C5,
+                        activeColor: AppColors.Viking,
                         value: showNotification,
                         onChanged: (val) => onSwitchChange(val),
                       ),
@@ -203,7 +187,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   sendNotification(String notificationText) async {
-    if(notificationText.isNotEmpty){
+    if (notificationText.isNotEmpty) {
       var android = new AndroidNotificationDetails('note', 'note', 'Your note',
           playSound: false,
           enableVibration: false,
@@ -223,7 +207,7 @@ class _MyAppState extends State<MyApp> {
     return Container(
       margin: const EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 10.0),
       decoration: BoxDecoration(
-        color: AppColors.C4BC2C5,
+        color: AppColors.Viking,
         borderRadius: BorderRadius.all(
           Radius.circular(50.0),
         ),
@@ -244,7 +228,8 @@ class _MyAppState extends State<MyApp> {
           ),
           onTap: param1,
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
             child: Text(
               buttonText,
               style: TextStyle(
@@ -259,7 +244,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   onSwitchChange(bool val) {
-    if(val){
+    if (val) {
       setNote();
     } else {
       setState(() {
