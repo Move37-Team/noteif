@@ -58,9 +58,9 @@ class _MyAppState extends State<MyApp> {
               : true; // for handling if pref is null
           if (note != null) {
             myController.text = note;
-            if (showNotification) {
-              sendNotification(note);
-            }
+            // if (showNotification) {
+            //   sendNotification(note);
+            // }
           }
         }));
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
