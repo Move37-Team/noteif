@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
       }
     }));
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var android = new AndroidInitializationSettings('@mipmap/notification_icon');
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(
