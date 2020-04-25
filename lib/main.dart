@@ -1,39 +1,54 @@
-import 'dart:typed_data';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MaterialApp(
-    localizationsDelegates: [
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: [
-      Locale("fa", "IR"),
-    ],
-    theme: ThemeData(
-      fontFamily: 'IRANSansMobile',
-        primaryColor: AppColors.bondiBlue
-    ),
-    locale: Locale("fa", "IR"),
-    home: new MyApp(),
-  ));
+  runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  // static FirebaseAnalyticsObserver observer =
+  //     FirebaseAnalyticsObserver(analytics: analytics);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    if (!kReleaseMode) {
+//      analytics.resetAnalyticsData();
+      analytics.setAnalyticsCollectionEnabled(false);
+    }
+    analytics.logAppOpen();
+    return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale("fa", "IR"),
+      ],
+      theme: ThemeData(
+          fontFamily: 'IRANSansMobile', primaryColor: AppColors.bondiBlue),
+      locale: Locale("fa", "IR"),
+//      navigatorObservers: <NavigatorObserver>[observer],
+      home: new HomePage(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final myController = TextEditingController();
   bool showNotification = false;
