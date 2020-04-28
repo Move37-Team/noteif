@@ -21,7 +21,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  firebase_analytics: any
   flutter_local_notifications: any
   gradient_app_bar: any
   shared_preferences: any

@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -7,24 +6,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:firebase_analytics/observer.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
-  // static FirebaseAnalyticsObserver observer =
-  //     FirebaseAnalyticsObserver(analytics: analytics);
-
   @override
   Widget build(BuildContext context) {
-    if (!kReleaseMode) {
-//      analytics.resetAnalyticsData();
-      analytics.setAnalyticsCollectionEnabled(false);
-    }
-    analytics.logAppOpen();
     return MaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
