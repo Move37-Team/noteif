@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
+import 'package:noteif/helper/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -66,14 +67,17 @@ class _HomePageState extends State<HomePage> {
             // }
           }
         }));
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var android = AndroidInitializationSettings('@mipmap/notification_icon');
-    var iOS = IOSInitializationSettings();
-    var initSettings = InitializationSettings(android, iOS);
-    flutterLocalNotificationsPlugin.initialize(
-      initSettings,
-//        onSelectNotification: onSelectNotification
-    );
+    
+    if (AppUtils.isAndroidOrIOS()) {
+      flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+      var android = AndroidInitializationSettings('@mipmap/notification_icon');
+      var iOS = IOSInitializationSettings();
+      var initSettings = InitializationSettings(android, iOS);
+      flutterLocalNotificationsPlugin.initialize(
+        initSettings,
+  //        onSelectNotification: onSelectNotification
+      );
+    }
   }
 
 //  Future onSelectNotification(String payload) {
@@ -196,7 +200,9 @@ class _HomePageState extends State<HomePage> {
     });
     prefs.setBool('showNotification', true);
     prefs.setString('note', noteTextBoxController.text.trim());
-    sendNotification(noteTextBoxController.text.trim());
+    if (AppUtils.isAndroidOrIOS()) {
+      sendNotification(noteTextBoxController.text.trim());
+    }
   }
 
   disableNote() {
@@ -204,7 +210,9 @@ class _HomePageState extends State<HomePage> {
       showNotification = false;
     });
     prefs.setBool('show', false);
-    flutterLocalNotificationsPlugin.cancelAll();
+    if (AppUtils.isAndroidOrIOS()) {
+      flutterLocalNotificationsPlugin.cancelAll();
+    }
   }
 
   sendNotification(String notificationText) async {
