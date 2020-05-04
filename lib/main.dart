@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -25,7 +26,12 @@ class MyApp extends StatelessWidget {
         Locale("fa", "IR"),
       ],
       theme: ThemeData(
-          fontFamily: 'IRANSansMobile', primaryColor: AppColors.bondiBlue),
+          fontFamily: 'Chewy-Regular',
+          primaryColor: AppColors.bondiBlue,
+          scaffoldBackgroundColor: AppColors.whiteSmoke,
+          ),
+      darkTheme: ThemeData.dark(),
+      // themeMode: ThemeMode.system,
       locale: Locale("fa", "IR"),
 //      navigatorObservers: <NavigatorObserver>[observer],
       home: HomePage(),
@@ -36,9 +42,11 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
+
 }
 
 class _HomePageState extends State<HomePage> {
+  bool themeSwitch = false;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final noteTextBoxController = TextEditingController();
   bool showNotification = false;
@@ -94,20 +102,24 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     final noteTextBox = Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
+      decoration: MediaQuery.of(context).platformBrightness == Brightness.light
+      ? BoxDecoration(
+        gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [AppColors.veryLightGray, AppColors.whiteSmoke],
-      )),
+      ))
+      : BoxDecoration(color: Colors.grey[850])
+      ,
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       child: Text(
         'Noteif',
         style: TextStyle(
           fontFamily: 'Chewy',
-          color: Colors.black,
+          // color: themeSwitch ? Colors.white : Colors.black,
           fontSize: 30.0,
         ),
         textAlign: TextAlign.center,
@@ -121,6 +133,7 @@ class _HomePageState extends State<HomePage> {
         style: TextStyle(
           height: 1.7,
           fontSize: 14.0,
+          // color: themeSwitch ? Colors.white : Colors.black
         ),
         textAlign: TextAlign.center,
       ),
@@ -140,7 +153,7 @@ class _HomePageState extends State<HomePage> {
         maxLines: null,
         decoration: new InputDecoration(
           labelText: "متن یادداشت",
-          border: new OutlineInputBorder(
+          border:  new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(7.0),
           ),
         ),
@@ -155,7 +168,9 @@ class _HomePageState extends State<HomePage> {
         child: ListTile(
           title: Text(
             'نمایش دادن نوتیفیکیشن',
-            style: TextStyle(fontSize: 14.0),
+            style: TextStyle(
+              fontSize: 14.0,
+              ),
           ),
           trailing: CupertinoSwitch(
             activeColor: AppColors.Viking,
@@ -172,7 +187,6 @@ class _HomePageState extends State<HomePage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.whiteSmoke,
 //      appBar: emptyAppbar(),
       body: SafeArea(
         child: Container(
