@@ -7,6 +7,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
 import 'package:noteif/helper/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'theme/themeModeChanger.dart';
+import 'package:provider/provider.dart';
+
+import 'helper/colors.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,21 +19,39 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        Locale("fa", "IR"),
-      ],
-      theme: ThemeData(
-          fontFamily: 'IRANSansMobile', primaryColor: AppColors.bondiBlue),
-      locale: Locale("fa", "IR"),
-//      navigatorObservers: <NavigatorObserver>[observer],
-      home: HomePage(),
+    return ChangeNotifierProvider<ThemeModeChanger>(
+          create: (_) => ThemeModeChanger(ThemeMode.system),
+          child: MaterialAppWithThemeMode(),
     );
+  }
+}
+
+class MaterialAppWithThemeMode extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    final themeMode = Provider.of<ThemeModeChanger>(context);
+
+    return MaterialApp(
+        localizationsDelegates: [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+    Locale("fa", "IR"),
+        ],
+        theme: ThemeData(
+      fontFamily: 'IRANSansMobile', 
+      primaryColor: AppColors.bondiBlue,
+      scaffoldBackgroundColor: AppColors.whiteSmoke
+      ),
+        darkTheme: ThemeData.dark(),
+        themeMode: themeMode.getThemeMode(),
+        locale: Locale("fa", "IR"),
+//      navigatorObservers: <NavigatorObserver>[observer],
+        home: HomePage(),
+      );
   }
 }
 
@@ -94,20 +116,26 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    ThemeModeChanger _themeModeChanger = Provider.of<ThemeModeChanger>(context);
+
     final noteTextBox = Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [AppColors.veryLightGray, AppColors.whiteSmoke],
-      )),
+      decoration: Theme.of(context).brightness == Brightness.light
+        ? BoxDecoration(
+          gradient:  LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.veryLightGray, AppColors.whiteSmoke],
+          )
+      )
+      : BoxDecoration(color: Colors.grey[850])
+      ,
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       child: Text(
         'Noteif',
         style: TextStyle(
           fontFamily: 'Chewy',
-          color: Colors.black,
           fontSize: 30.0,
         ),
         textAlign: TextAlign.center,
@@ -171,8 +199,27 @@ class _HomePageState extends State<HomePage> {
       child: Center(child: materialButton('ثبت یادداشت', setNote)),
     );
 
+
+    final themeModeSetting = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.brightness_auto),
+          onPressed: () => _themeModeChanger.setThemeMode(ThemeMode.system),
+        ),
+        IconButton(
+          icon: Icon(Icons.wb_sunny),
+          onPressed: () => _themeModeChanger.setThemeMode(ThemeMode.light),
+        ),
+        IconButton(
+          icon: Icon(Icons.brightness_2),
+          onPressed: () => _themeModeChanger.setThemeMode(ThemeMode.dark),
+        ),
+
+      ],
+    );
+
     return Scaffold(
-      backgroundColor: AppColors.whiteSmoke,
 //      appBar: emptyAppbar(),
       body: SafeArea(
         child: Container(
@@ -186,6 +233,7 @@ class _HomePageState extends State<HomePage> {
                 noteTextField,
                 saveNoteButton,
                 showNotificationWidgets,
+                themeModeSetting,
               ],
             ),
           ),

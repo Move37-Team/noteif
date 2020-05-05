@@ -28,6 +28,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
+  provider:
 
 dev_dependencies:
   flutter_test:
@@ -84,8 +85,8 @@ flutter:
     - family: Chewy
       fonts:
         - asset: assets/fonts/Chewy-Regular.ttf
-    - family: IRANSansMobile
-      fonts:
-        - asset: assets/fonts/IRANSansMobile.ttf
-        - asset: assets/fonts/IRANSansMobile_Bold.ttf
-          weight: 700
+    # - family: IRANSansMobile
+    #   fonts:
+    #     - asset: assets/fonts/IRANSansMobile.ttf
+    #     - asset: assets/fonts/IRANSansMobile_Bold.ttf
+    #       weight: 700
