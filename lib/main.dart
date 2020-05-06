@@ -42,12 +42,12 @@ class MaterialAppWithThemeMode extends StatelessWidget {
     Locale("fa", "IR"),
         ],
         theme: ThemeData(
-      fontFamily: 'IRANSansMobile', 
+      fontFamily: 'Vazir',
       primaryColor: AppColors.bondiBlue,
       scaffoldBackgroundColor: AppColors.whiteSmoke
       ),
         darkTheme: ThemeData(
-          fontFamily: 'IRANSansMobile',
+          fontFamily: 'Vazirgl',
           brightness: Brightness.dark
         ),
         themeMode: themeMode.getThemeMode(),

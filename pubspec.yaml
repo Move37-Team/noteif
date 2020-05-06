@@ -84,9 +84,9 @@ flutter:
   fonts:
     - family: Chewy
       fonts:
-        - asset: assets/fonts/Chewy-Regular.ttf
-    - family: IRANSansMobile
+        - asset: assets/fonts/Chewy/Chewy-Regular.ttf
+    - family: Vazir
       fonts:
-        - asset: assets/fonts/IRANSansMobile.ttf
-        - asset: assets/fonts/IRANSansMobile_Bold.ttf
+        - asset: assets/fonts/Vazir/Vazir.ttf
+        - asset: assets/fonts/Vazir/Vazir-Bold.ttf
           weight: 700
