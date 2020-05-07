@@ -9,12 +9,14 @@ import 'package:noteif/helper/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/themeModeChanger.dart';
 import 'package:provider/provider.dart';
+import 'Languages.dart';
 
 import 'helper/colors.dart';
 
 void main() {
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,20 +28,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 class MaterialAppWithThemeMode extends StatelessWidget {
 
+  
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<ThemeModeChanger>(context);
-
     return MaterialApp(
         localizationsDelegates: [
+    const DemoLocalizationsDelegate(),
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [
     Locale("fa", "IR"),
+    Locale("en","US"),
         ],
         theme: ThemeData(
       fontFamily: 'IRANSansMobile', 
@@ -51,7 +56,6 @@ class MaterialAppWithThemeMode extends StatelessWidget {
           brightness: Brightness.dark
         ),
         themeMode: themeMode.getThemeMode(),
-        locale: Locale("fa", "IR"),
 //      navigatorObservers: <NavigatorObserver>[observer],
         home: HomePage(),
       );
@@ -64,6 +68,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+
+  
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final noteTextBoxController = TextEditingController();
   bool showNotification = false;
@@ -79,6 +86,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    
+
     SharedPreferences.getInstance().then((sp) => setState(() {
           prefs = sp;
           String note = prefs.getString('note');
@@ -120,6 +129,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
+    Locale local = DemoLocalizations.of(context).locale;
+    
+
     ThemeModeChanger _themeModeChanger = Provider.of<ThemeModeChanger>(context);
 
     final noteTextBox = Container(
@@ -148,14 +160,19 @@ class _HomePageState extends State<HomePage> {
     final descriptionText = Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       child: Text(
-        'ثبت یادداشت های مهم شما در نوتیفیکیشن :)',
+        DemoLocalizations.of(context).title,
         style: TextStyle(
           height: 1.7,
           fontSize: 14.0,
+          fontWeight: FontWeight.bold,
         ),
         textAlign: TextAlign.center,
       ),
     );
+
+    //We can also add more cases into condition for more languages
+    var texTAlign = (local == Locale('en','US')) ?TextAlign.left :TextAlign.right ;
+    var texTDirection = (local == Locale('en','US')) ?TextDirection.ltr :TextDirection.rtl ;
 
     final noteTextField = Padding(
       padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
@@ -163,17 +180,18 @@ class _HomePageState extends State<HomePage> {
         style: TextStyle(
           fontSize: 14.0,
         ),
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.right,
+        textDirection: texTDirection,
+        textAlign: texTAlign,
         minLines: 6,
         cursorColor: AppColors.bondiBlue,
         keyboardType: TextInputType.multiline,
         maxLines: null,
         decoration: new InputDecoration(
-          labelText: "متن یادداشت",
+          labelText: DemoLocalizations.of(context).main,
           border: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(7.0),
           ),
+
         ),
         controller: noteTextBoxController,
       ),
@@ -185,7 +203,7 @@ class _HomePageState extends State<HomePage> {
       child: MergeSemantics(
         child: ListTile(
           title: Text(
-            'نمایش دادن نوتیفیکیشن',
+            DemoLocalizations.of(context).switchKey,
             style: TextStyle(fontSize: 14.0),
           ),
           trailing: CupertinoSwitch(
@@ -199,7 +217,7 @@ class _HomePageState extends State<HomePage> {
     );
     final saveNoteButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-      child: Center(child: materialButton('ثبت یادداشت', setNote)),
+      child: Center(child: materialButton(DemoLocalizations.of(context).button, setNote)),
     );
 
 
@@ -333,3 +351,4 @@ class _HomePageState extends State<HomePage> {
     }
   }
 }
+
