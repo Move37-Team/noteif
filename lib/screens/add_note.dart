@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:noteif/helper/colors.dart';
-import 'package:noteif/helper/utils.dart';
-import 'package:noteif/models/note.dart';
+import 'package:noteif/providers/note.dart';
 import 'package:noteif/providers/notes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:noteif/providers/theme_mode_changer.dart';
 import 'package:provider/provider.dart';
 
@@ -18,11 +15,8 @@ class AddNoteScreen extends StatefulWidget {
 }
 
 class _AddNoteScreenState extends State<AddNoteScreen> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final noteBodyTextBoxController = TextEditingController();
   final noteTitleTextBoxController = TextEditingController();
-  bool showNotification = false;
-  SharedPreferences prefs;
 
   @override
   void dispose() {
@@ -33,58 +27,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    if (AppUtils.isAndroidOrIOS()) {
-      flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-      var android = AndroidInitializationSettings('@mipmap/notification_icon');
-      var iOS = IOSInitializationSettings();
-      var initSettings = InitializationSettings(android, iOS);
-      flutterLocalNotificationsPlugin.initialize(
-        initSettings,
-        //        onSelectNotification: onSelectNotification
-      );
-    }
-  }
-
-//  Future onSelectNotification(String payload) {
-//    debugPrint("payload : $payload");
-//    myController.text = payload;
-//    showDialog(
-//      context: context,
-//      builder: (_) => new AlertDialog(
-//        title: new Text('Notification'),
-//        content: new Text('$payload'),
-//      ),
-//    );
-//  }
-
-  void saveNote(BuildContext context) async {
-    var notesProvider = Provider.of<NotesProvider>(context, listen: false);
-    await notesProvider.insertNote(Note(
-        body: noteBodyTextBoxController.text.trim(),
-        title: noteBodyTextBoxController.text.trim()
-    ));
-    await notesProvider.getAllNotes();
-    List<Note> notes = notesProvider.notes;
-    if(notes.length > 0){
-      print(notes.length - 1);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    saveNote(context);
     ThemeModeChanger _themeModeChanger = Provider.of<ThemeModeChanger>(context);
 
-    final noteTextBox = Container(
+    final headerWidget = Container(
       decoration: Theme.of(context).brightness == Brightness.light
           ? BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.veryLightGray, AppColors.whiteSmoke],
-          ))
+              gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.veryLightGray, AppColors.whiteSmoke],
+            ))
           : BoxDecoration(color: Colors.grey[850]),
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
@@ -98,8 +51,27 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       ),
     );
 
-    final noteTextField = Padding(
+    final noteTitleTextField = Padding(
       padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
+      child: TextField(
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.right,
+        cursorColor: AppColors.bondiBlue,
+        decoration: new InputDecoration(
+          labelText: "عنوان",
+          border: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(7.0),
+          ),
+        ),
+        controller: noteTitleTextBoxController,
+      ),
+    );
+
+    final noteBodyTextField = Padding(
+      padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 20.0),
       child: TextField(
         style: TextStyle(
           fontSize: 14.0,
@@ -120,27 +92,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       ),
     );
 
-    final showNotificationWidgets = Container(
-      padding: const EdgeInsets.all(10.0),
-      width: 300.0,
-      child: MergeSemantics(
-        child: ListTile(
-          title: Text(
-            'نمایش دادن نوتیفیکیشن',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          trailing: CupertinoSwitch(
-            activeColor: AppColors.Viking,
-            value: showNotification,
-            onChanged: (val) => onSwitchChange(val),
-          ),
-          onTap: () => onSwitchChange(!showNotification),
-        ),
-      ),
-    );
     final saveNoteButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-      child: Center(child: materialButton('ثبت یادداشت', setNote)),
+      child: Center(child: materialButton('ثبت یادداشت', () => saveNote(context))),
     );
 
     final themeModeSetting = Row(
@@ -170,10 +124,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                noteTextBox,
-                noteTextField,
+                headerWidget,
+                noteTitleTextField,
+                noteBodyTextField,
                 saveNoteButton,
-                showNotificationWidgets,
                 themeModeSetting,
               ],
             ),
@@ -183,40 +137,18 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
-  setNote(){
-    prefs.setBool('showNotification', true);
-    prefs.setString('note', noteBodyTextBoxController.text.trim());
-    if (AppUtils.isAndroidOrIOS()) {
-      sendNotification(noteBodyTextBoxController.text.trim());
-    }
-  }
-
-  disableNote() {
-    setState(() {
-      showNotification = false;
-    });
-    prefs.setBool('show', false);
-    if (AppUtils.isAndroidOrIOS()) {
-      flutterLocalNotificationsPlugin.cancelAll();
-    }
-  }
-
-  sendNotification(String notificationText) async {
-    if (notificationText.isNotEmpty) {
-      var android = AndroidNotificationDetails('note', 'note', 'Your note',
-          playSound: false,
-          enableVibration: false,
-          styleInformation: BigTextStyleInformation(notificationText),
-          autoCancel: false,
-          priority: Priority.Max,
-          importance: Importance.Max,
-          ongoing: true);
-      var iOS = IOSNotificationDetails(presentSound: false);
-      var platform = NotificationDetails(android, iOS);
-      await flutterLocalNotificationsPlugin
-          .show(0, null, notificationText, platform, payload: notificationText);
-    } else {
-      // disableNote();
+  void saveNote(BuildContext context) async {
+    var _title = noteTitleTextBoxController.text.trim();
+    var _body = noteBodyTextBoxController.text.trim();
+    if(_body.isNotEmpty){
+      var notesProvider = Provider.of<NotesProvider>(context, listen: false);
+      Note _note = Note(
+        title: _title.isNotEmpty ? _title : null,
+        body: _body,
+        isEnabled: true,
+      );
+      _note = await notesProvider.insertNote(_note);
+      Navigator.pop(context, _note);
     }
   }
 
@@ -246,7 +178,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           onTap: onTap,
           child: Container(
             padding:
-            const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
             child: Text(
               buttonText,
               style: TextStyle(
@@ -258,13 +190,5 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         ),
       ),
     );
-  }
-
-  onSwitchChange(bool val) {
-    if (val) {
-      setNote();
-    } else {
-      disableNote();
-    }
   }
 }

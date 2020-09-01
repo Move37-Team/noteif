@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:noteif/helper/utils.dart';
+import 'package:noteif/providers/note.dart';
 import 'package:noteif/screens/add_note.dart';
 import 'package:noteif/widgets/header.dart';
+import 'package:noteif/widgets/notes_list.dart';
 import 'package:noteif/widgets/theme_mode_settings.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';
@@ -12,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   @override
   Widget build(BuildContext context) {
 
@@ -38,13 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
               HeaderWidget(),
               descriptionText,
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text('hi')
-                    ],
-                  ),
-                ),
+                child: NotesListWidget(),
               ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -55,15 +54,23 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddNoteScreen(),
-              ));
-        },
+        onPressed: () => _awaitReturnValueFromAddNoteScreen(context),
         child: Icon(Icons.add),
       ),
     );
   }
+
+  void _awaitReturnValueFromAddNoteScreen(BuildContext context) async {
+    Note _note = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddNoteScreen(),
+        ));
+    if(_note != null){
+      if (AppUtils.isAndroidOrIOS()) {
+        AppUtils.sendNotification(_note);
+      }
+    }
+  }
+
 }

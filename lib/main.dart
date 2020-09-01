@@ -7,6 +7,8 @@ import 'package:noteif/providers/theme_mode_changer.dart';
 import 'package:noteif/screens/home.dart';
 import 'package:provider/provider.dart';
 
+import 'package:noteif/helper/utils.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -15,6 +17,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    AppUtils.initFlutterLocalNotificationsPlugin();
     return MultiProvider(
         providers: [
           ChangeNotifierProvider<NotesProvider>(
