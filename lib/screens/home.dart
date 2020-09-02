@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:noteif/helper/utils.dart';
 import 'package:noteif/providers/note.dart';
-import 'package:noteif/screens/add_note.dart';
+import 'package:noteif/screens/create_update_note.dart';
 import 'package:noteif/widgets/header.dart';
 import 'package:noteif/widgets/notes_list.dart';
 import 'package:noteif/widgets/theme_mode_settings.dart';
@@ -16,10 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   Widget build(BuildContext context) {
-
     final descriptionText = Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       child: Text(
@@ -31,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
         textAlign: TextAlign.center,
       ),
     );
-
 
     return Scaffold(
       body: SafeArea(
@@ -54,23 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _awaitReturnValueFromAddNoteScreen(context),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CreateUpdateNoteScreen(),
+          ),
+        ),
         child: Icon(Icons.add),
       ),
     );
   }
-
-  void _awaitReturnValueFromAddNoteScreen(BuildContext context) async {
-    Note _note = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddNoteScreen(),
-        ));
-    if(_note != null){
-      if (AppUtils.isAndroidOrIOS()) {
-        AppUtils.sendNotification(_note);
-      }
-    }
-  }
-
 }

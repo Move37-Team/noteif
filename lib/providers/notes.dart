@@ -24,16 +24,22 @@ class NotesProvider extends ChangeNotifier {
     return note;
   }
 
-  //TODO: update _notes and notifyListeners
-  Future updateNote(Note note) async {
+  Future<Note> updateNote(Note note) async {
     final finder = Finder(filter: Filter.byKey(note.id));
     await notesFolder.update(await _db, note.toMap(), finder: finder);
+
+    // In case we didn't update note object
+    _notes.firstWhere((element) => element.id == note.id).updateFrom(note);
+
+    notifyListeners();
+    return note;
   }
 
-  //TODO: update _notes and notifyListeners
   Future delete(Note note) async {
     final finder = Finder(filter: Filter.byKey(note.id));
     await notesFolder.delete(await _db, finder: finder);
+    _notes.removeWhere((element) => element.id == note.id);
+    notifyListeners();
   }
 
   Future<List<Note>> readAllNotes() async {

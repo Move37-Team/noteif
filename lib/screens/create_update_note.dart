@@ -2,21 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:noteif/helper/colors.dart';
+import 'package:noteif/helper/utils.dart';
 import 'package:noteif/providers/note.dart';
 import 'package:noteif/providers/notes.dart';
 import 'package:noteif/providers/theme_mode_changer.dart';
 import 'package:provider/provider.dart';
 
-class AddNoteScreen extends StatefulWidget {
+class CreateUpdateNoteScreen extends StatefulWidget {
   static const routeName = '/note/add';
+  final Note note;
+
+  CreateUpdateNoteScreen({Key key, this.note}) : super(key: key);
 
   @override
-  _AddNoteScreenState createState() => _AddNoteScreenState();
+  _CreateUpdateNoteScreenState createState() => _CreateUpdateNoteScreenState();
 }
 
-class _AddNoteScreenState extends State<AddNoteScreen> {
+class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
   final noteBodyTextBoxController = TextEditingController();
   final noteTitleTextBoxController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    noteBodyTextBoxController.text =
+        widget.note != null ? widget.note.body : '';
+    noteTitleTextBoxController.text =
+        widget.note != null ? widget.note.title : '';
+  }
 
   @override
   void dispose() {
@@ -94,7 +107,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
     final saveNoteButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-      child: Center(child: materialButton('ثبت یادداشت', () => saveNote(context))),
+      child:
+          Center(child: materialButton('ثبت یادداشت', () => saveNote(context))),
     );
 
     final themeModeSetting = Row(
@@ -140,15 +154,28 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   void saveNote(BuildContext context) async {
     var _title = noteTitleTextBoxController.text.trim();
     var _body = noteBodyTextBoxController.text.trim();
-    if(_body.isNotEmpty){
+    if (_body.isNotEmpty) {
       var notesProvider = Provider.of<NotesProvider>(context, listen: false);
-      Note _note = Note(
-        title: _title.isNotEmpty ? _title : null,
-        body: _body,
-        isEnabled: true,
-      );
-      _note = await notesProvider.insertNote(_note);
-      Navigator.pop(context, _note);
+      Note _note;
+      if (widget.note == null) {
+        // create note
+        _note = Note(
+          title: _title.isNotEmpty ? _title : null,
+          body: _body,
+          isEnabled: true,
+        );
+        _note = await notesProvider.insertNote(_note);
+      } else {
+        // update note
+        _note = widget.note;
+        _note.title = _title.isNotEmpty ? _title : null;
+        _note.body = _body;
+        _note = await notesProvider.updateNote(_note);
+      }
+      if (_note.isEnabled && AppUtils.isAndroidOrIOS()) {
+        AppUtils.sendNotification(_note);
+      }
+      Navigator.pop(context);
     }
   }
 

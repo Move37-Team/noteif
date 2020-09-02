@@ -36,8 +36,14 @@ class Note with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateFrom(Note note) {
+    this.id = note.id;
+    this.title = note.title;
+    this.body = note.body;
+    this.isEnabled = note.isEnabled;
+  }
 
-  Future updateNote() async {
+  Future<Note> updateNote() async {
     final finder = Finder(filter: Filter.byKey(this.id));
     await NotesProvider.notesFolder.update(await _db, this.toMap(), finder: finder);
   }
