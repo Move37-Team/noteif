@@ -8,10 +8,15 @@ import 'package:noteif/screens/home.dart';
 import 'package:provider/provider.dart';
 
 import 'package:noteif/helper/utils.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(EasyLocalization(
+    supportedLocales: [Locale('en', 'US'), Locale('fa', 'IR')],
+    path: 'lib/langs',
+    fallbackLocale: Locale('en', 'US'),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -19,14 +24,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     AppUtils.initFlutterLocalNotificationsPlugin();
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<NotesProvider>(
-            create: (_) => NotesProvider(),
-          ),
-          ChangeNotifierProvider<ThemeModeChanger>(
-            create: (_) => ThemeModeChanger(ThemeMode.system),
-          ),
-        ],
+      providers: [
+        ChangeNotifierProvider<NotesProvider>(
+          create: (_) => NotesProvider(),
+        ),
+        ChangeNotifierProvider<ThemeModeChanger>(
+          create: (_) => ThemeModeChanger(ThemeMode.system),
+        ),
+      ],
       child: MaterialAppWithThemeMode(),
     );
   }
@@ -38,14 +43,8 @@ class MaterialAppWithThemeMode extends StatelessWidget {
     final themeMode = Provider.of<ThemeModeChanger>(context);
 
     return MaterialApp(
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-      supportedLocales: [
-        Locale("fa", "IR"),
-      ],
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
       theme: ThemeData(
         fontFamily: 'Vazir',
         primaryColor: AppColors.bondiBlue,
@@ -56,7 +55,7 @@ class MaterialAppWithThemeMode extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: themeMode.getThemeMode(),
-        locale: Locale("fa", "IR"),
+      locale: context.locale,
 //      home: HomeScreen(),
       routes: {
         HomeScreen.routeName: (ctx) => HomeScreen(),
