@@ -7,6 +7,9 @@ import 'package:noteif/providers/note.dart';
 import 'package:noteif/providers/notes.dart';
 import 'package:noteif/providers/theme_mode_changer.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+import 'lang_view.dart';
 
 class CreateUpdateNoteScreen extends StatefulWidget {
   static const routeName = '/note/add';
@@ -70,11 +73,11 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
         style: TextStyle(
           fontSize: 14.0,
         ),
-        textDirection: TextDirection.rtl,
+        //textDirection: TextDirection.rtl,
         textAlign: TextAlign.right,
         cursorColor: AppColors.bondiBlue,
         decoration: new InputDecoration(
-          labelText: "عنوان",
+          labelText: 'noteTitleTextField'.tr().toString(),
           border: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(7.0),
           ),
@@ -89,14 +92,14 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
         style: TextStyle(
           fontSize: 14.0,
         ),
-        textDirection: TextDirection.rtl,
+        //textDirection: TextDirection.rtl,
         textAlign: TextAlign.right,
         minLines: 6,
         cursorColor: AppColors.bondiBlue,
         keyboardType: TextInputType.multiline,
         maxLines: null,
         decoration: new InputDecoration(
-          labelText: "متن یادداشت",
+          labelText: 'noteBodyTextField'.tr().toString(),
           border: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(7.0),
           ),
@@ -107,8 +110,9 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
 
     final saveNoteButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-      child:
-          Center(child: materialButton('ثبت یادداشت', () => saveNote(context))),
+      child: Center(
+          child: materialButton(
+              'saveNote'.tr().toString(), () => saveNote(context))),
     );
 
     final themeModeSetting = Row(
@@ -125,6 +129,16 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
         IconButton(
           icon: Icon(Icons.brightness_2),
           onPressed: () => _themeModeChanger.setThemeMode(ThemeMode.dark),
+        ),
+        IconButton(
+          icon: Icon(Icons.language),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => LanguageView(), fullscreenDialog: true),
+            );
+          },
         ),
       ],
     );

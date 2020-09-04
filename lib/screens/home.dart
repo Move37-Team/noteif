@@ -7,6 +7,7 @@ import 'package:noteif/widgets/header.dart';
 import 'package:noteif/widgets/notes_list.dart';
 import 'package:noteif/widgets/theme_mode_settings.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final descriptionText = Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       child: Text(
-        'ثبت یادداشت های مهم شما در نوتیفیکیشن :)',
+        'title'.tr().toString(),
         style: TextStyle(
           height: 1.7,
           fontSize: 14.0,
